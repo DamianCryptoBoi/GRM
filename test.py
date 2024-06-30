@@ -3,7 +3,7 @@ import argparse
 parser = argparse.ArgumentParser(description="Send a prompt to an endpoint.")
 parser.add_argument("prompt", metavar="mode", type=str)
 args = parser.parse_args()
-gen_response = requests.post("http://localhost:8093/generate", data={
+gen_response = requests.post("http://localhost:8888/generate", data={
     "prompt": args.prompt,
 }, timeout=600)
 

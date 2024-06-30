@@ -1,7 +1,7 @@
-torch==2.0.1 
+torch==2.1.1
 torchvision==0.15.2 
-torchaudio==2.0.2 
-pytorch-lightning==2.0.1 
+torchaudio==2.1.1
+pytorch-lightning==2.1.1 
 open3d
 imageio[ffmpeg]
 imageio[pyav]

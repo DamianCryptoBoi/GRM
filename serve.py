@@ -1,8 +1,9 @@
 from fastapi import FastAPI, Form
 from processor import GRMProcessor
+import uvicorn
 
-app = FastAPI()
 processor = GRMProcessor()
+app = FastAPI()
 
 
 @app.get("/")
@@ -15,5 +16,4 @@ async def generate(prompt: str = Form()):
     return processor.generate(prompt)
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port="8888")

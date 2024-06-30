@@ -172,13 +172,6 @@ def save_gaussian(latent, gs_path, model, opacity_thr=None):
 
 def images2gaussian(images, c2ws, fxfycxcy, model, gs_path, video_path, mesh_path=None, fuse_mesh=False, optimize_texture=False):
 
-    if fuse_mesh:
-        fib_camera_path = generate_cameras(
-            r=2.9, num_cameras=200, pitch=np.deg2rad(20), use_fibonacci=True)
-
-    camera_path = generate_cameras(
-        r=2.7, num_cameras=120, pitch=np.deg2rad(20))
-
     with torch.no_grad():
         with torch.cuda.amp.autocast(
                 enabled=True,
@@ -267,10 +260,11 @@ def instant3d_gs(instant3d_model,
     fxfycxcy = (fxfycxcy.unsqueeze(0).unsqueeze(0)).repeat(1, c2ws.shape[1], 1)
 
     prompt = '_'.join(prompt.split())
-    images2gaussian(
+    file_path = images2gaussian(
         image, c2ws, fxfycxcy, grm_model, f'./{cache_dir}/{prompt}_gs.ply', f'{cache_dir}/{prompt}.mp4', f'{cache_dir}/{prompt}_mesh.ply', fuse_mesh=fuse_mesh, optimize_texture=optimize_texture
     )
     torch.cuda.empty_cache()
+    return file_path
 
 
 class GRMProcessor:

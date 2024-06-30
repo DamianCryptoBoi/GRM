@@ -25,7 +25,7 @@ CUDA_HOME=${CONDA_PREFIX}
 # git clone --branch 0.9.9.0 https://github.com/g-truc/glm.git ./extras/diff_gaussian_rasterization/third_party/glm
 # pip install ./extras/diff_gaussian_rasterization
 
-pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu118
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu121
 pip install streamlit Ninja
 cd third_party/diff-gaussian-rasterization &&  pip install -e .
 cd ..

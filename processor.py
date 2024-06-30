@@ -278,11 +278,11 @@ class GRMProcessor:
         os.makedirs('cache', exist_ok=True)
         print("Done")
 
-    def process(self, prompt: str):
+    def process(self, prompt: str, steps: int = 30):
         return instant3d_gs(self.instant3d_model,
                             grm_model=self.grm_uniform_model,
                             grm_model_cfg=self.grm_uniform_config,
                             prompt=prompt,
                             guidance_scale=5.0,
-                            num_steps=30,
+                            num_steps=steps,
                             gaussian_std=0.1)

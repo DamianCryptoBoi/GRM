@@ -13,6 +13,7 @@ for prompt in prompts:
 
     gen_response = requests.post("http://localhost:8888/generate/", data={
         "prompt": prompt,
+        "step": 300
     }, timeout=600)
 
     end_time = time.time()  # Record the end time after the request

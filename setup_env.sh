@@ -27,12 +27,14 @@ CUDA_HOME=${CONDA_PREFIX}
 
 pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu118
 pip install streamlit Ninja
-cd third_party/diff-gaussian-rasterization &&  pip install -e . && cd ../../
+cd third_party/diff-gaussian-rasterization &&  pip install -e .
+cd ..
+cd ..
 
 mkdir checkpoints && cd checkpoints
 wget https://huggingface.co/camenduru/GRM/resolve/main/grm_u.pth
 wget https://huggingface.co/camenduru/GRM/resolve/main/instant3d.pth
-cd ../
+cd ..
 # Store the path of the Conda interpreter
 CONDA_INTERPRETER_PATH=$(which python)
 

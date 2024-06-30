@@ -1,11 +1,13 @@
 import requests
 import base64
-import time  # Import the time module
+import time
+import os  # Import the os module for file operations
 
 with open("./prompt.txt", "r") as f:
     prompts = f.readlines()
 
 for prompt in prompts:
+    print("-"*50)
     print("Prompt: ", prompt)
     start_time = time.time()  # Record the start time before the request
 
@@ -28,3 +30,7 @@ for prompt in prompts:
     print(f"Score: {score}")
     # Print the generation time
     print(f"Generation Time: {generation_time} seconds")
+
+    os.remove(ply_file_path)  # Remove the PLY file after processing
+    print(f"Removed file: {ply_file_path}")  # Optional: Confirm file removal
+    print("-"*50)

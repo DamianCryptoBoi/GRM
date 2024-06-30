@@ -2,6 +2,6 @@ from processor import GRMProcessor
 
 grm = GRMProcessor()
 
-grm.process(prompt="a dog")
-grm.process(prompt="a cat")
-grm.process(prompt="a snake")
+grm.process("a dog")
+grm.process("a cat")
+grm.process("a snake")

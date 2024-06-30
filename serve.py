@@ -10,7 +10,7 @@ async def check():
     return {"status": "ok"}
 
 
-@app.get("/generate")
+@app.post("/generate")
 async def generate(prompt: str):
     return processor.generate(prompt)
 

@@ -43,3 +43,5 @@ git+https://github.com/NVlabs/nvdiffrast.git@c5caf7bdb8a2448acc491a9faa47753972e
 fpsample
 fastapi
 asyncio
+streamlit
+Ninja

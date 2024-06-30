@@ -9,4 +9,5 @@ for prompt in prompts:
     gen_response = requests.post("http://localhost:8888/generate/", data={
         "prompt": prompt,
     }, timeout=600)
+    print("Response: ", gen_response.json())
     time.sleep(1)

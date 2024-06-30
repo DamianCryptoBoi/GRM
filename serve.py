@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Form
 from processor import GRMProcessor
 
 app = FastAPI()
@@ -11,7 +11,7 @@ async def check():
 
 
 @app.post("/generate")
-async def generate(prompt: str):
+async def generate(prompt: str = Form()):
     return processor.generate(prompt)
 
 if __name__ == "__main__":

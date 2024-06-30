@@ -28,11 +28,6 @@ from third_party.generative_models.scripts.sampling.simple_video_sample import s
 torch.cuda.set_device(0)
 device = torch.device(0)
 
-mesh_renderer = MeshRenderer(
-   near=0.01,
-   far=100,
-   ssaa=1,
-   texture_filter='linear-mipmap-linear').to(device)
 
 
 def dump_video(image_sets, path, **kwargs):
@@ -309,9 +304,11 @@ def instant3d_gs(instant3d_model,
 
 class GRMProcessor:
     def __init__(self) -> None:
+        print("Init models")
         self.grm_uniform_path = 'checkpoints/grm_u.pth'
-        self.grm_uniform_model, self.grm_uniform_config = build_grm_model(grm_uniform_path)
+        self.grm_uniform_model, self.grm_uniform_config = build_grm_model(self.grm_uniform_path)
         self.instant3d_model = uild_instant3d_model(config_path='third_party/generative_models/configs/sd_xl_base.yaml', ckpt_path='checkpoints/instant3d.pth')
+        print("Done")
 
     def process(prompt:str):
         return instant3d_gs(instant3d_model,

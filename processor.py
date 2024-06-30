@@ -281,7 +281,7 @@ class GRMProcessor:
             self.grm_uniform_path)
         self.instant3d_model = build_instant3d_model(
             config_path='third_party/generative_models/configs/sd_xl_base.yaml', ckpt_path='checkpoints/instant3d.pth')
-        os.mkdir('cache', exist_ok=True)
+        os.makedirs('cache', exist_ok=True)
         print("Done")
 
     def process(self, prompt: str):

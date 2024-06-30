@@ -310,7 +310,7 @@ class GRMProcessor:
         self.instant3d_model = build_instant3d_model(config_path='third_party/generative_models/configs/sd_xl_base.yaml', ckpt_path='checkpoints/instant3d.pth')
         print("Done")
 
-    def process(prompt:str):
+    def process(self, prompt:str):
         return instant3d_gs(instant3d_model,
                   grm_model=self.grm_uniform_model,
                   grm_model_cfg=self.grm_uniform_config,

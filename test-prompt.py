@@ -16,7 +16,7 @@ for prompt in prompts:
     end_time = time.time()  # Record the end time after the request
     generation_time = end_time - start_time  # Calculate the duration
 
-    ply_file_path = gen_response.text.replaceAll('"', '')
+    ply_file_path = gen_response.text.replace('"', '')
 
     with open(ply_file_path, 'rb') as file:
         file_content = base64.b64encode(file.read()).decode('utf-8')

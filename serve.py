@@ -9,6 +9,7 @@ import base64
 from pydantic import BaseModel
 from pathlib import Path
 import time
+import os
 
 
 class SampleInput(BaseModel):
@@ -25,7 +26,7 @@ class DiffUsers:
         self.pipeline = AutoPipelineForText2Image.from_pretrained(
             "stabilityai/sdxl-turbo", torch_dtype=torch.float16, variant="fp16"
         ).to(self.device)
-        self.steps = 50
+        self.steps = 4
         self.guidance_scale = 0.0
 
         self._lock = threading.Lock()
@@ -42,11 +43,10 @@ class DiffUsers:
             generator=generator,
             guidance_scale=self.guidance_scale,
         ).images[0]
-        images_dir = Path("./images")
         # Create the directory if it doesn't exist
-        images_dir.mkdir(exist_ok=True)
+        os.makedirs("images", exist_ok=True)
         # Define the path for the new image
-        image_path = images_dir / f"{time.time()}.png"
+        image_path = f"./images/{time.time()}.png"
 
         # Save the image
         image.save(image_path, format="png")

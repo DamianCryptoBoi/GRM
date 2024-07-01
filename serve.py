@@ -45,7 +45,8 @@ class DiffUsers:
         # Create the directory if it doesn't exist
         images_dir.mkdir(exist_ok=True)
         # Define the path for the new image
-        image_path = images_dir / f"{prompt.trim().replace(" ", "_")}.png"
+        file_name = prompt.trim().replace(" ", "_")
+        image_path = images_dir / f"{file_name}.png"
 
         # Save the image
         image.save(image_path, format="png")

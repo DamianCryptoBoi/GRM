@@ -26,7 +26,7 @@ class DiffUsers:
         self.pipeline = AutoPipelineForText2Image.from_pretrained(
             "stabilityai/sdxl-turbo", torch_dtype=torch.float16, variant="fp16"
         ).to(self.device)
-        self.steps = 4
+        self.steps = 50
         self.guidance_scale = 0.0
 
         self._lock = threading.Lock()

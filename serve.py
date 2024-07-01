@@ -52,7 +52,7 @@ class DiffUsers:
         image.save(image_path, format="png")
 
         # Return the path of the saved image
-        return {"image_path": str(image_path)}
+        return image_path
 
     def sample(self, input: SampleInput):
         try:

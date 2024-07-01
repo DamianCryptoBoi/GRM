@@ -275,10 +275,10 @@ def sv3d_gs(
     fxfycxcy = (fxfycxcy.unsqueeze(0).unsqueeze(0)).repeat(1, c2ws.shape[1], 1)
 
     name = os.path.splitext(os.path.basename(image_path))[0]
-    file_path = images2gaussian(
+    images2gaussian(
         images, c2ws, fxfycxcy, grm_model, f'./{cache_dir}/{name}_gs.ply', f'{cache_dir}/{name}.mp4', f'{cache_dir}/{name}_mesh.ply', fuse_mesh=fuse_mesh, optimize_texture=optimize_texture)
     torch.cuda.empty_cache()
-    return file_path
+    return f'./{cache_dir}/{name}_gs.ply'
 
 
 class GRMProcessorSV3D:

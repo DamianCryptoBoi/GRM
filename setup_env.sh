@@ -26,7 +26,12 @@ CUDA_HOME=${CONDA_PREFIX}
 # pip install ./extras/diff_gaussian_rasterization
 
 pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu121
-cd third_party/diff-gaussian-rasterization &&  pip install -e .
+cd third_party
+cd diff-gaussian-rasterization &&  pip install -e .
+cd ..
+cd generative_models &&  pip install -e .
+cd ..
+cd segmentation_models &&  pip install -e .
 cd ..
 cd ..
 

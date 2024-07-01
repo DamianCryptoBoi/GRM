@@ -45,3 +45,5 @@ fastapi
 asyncio
 streamlit
 Ninja
+pydantic
+huggingface_hub[cli]

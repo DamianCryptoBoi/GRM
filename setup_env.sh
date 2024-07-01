@@ -32,7 +32,8 @@ cd ..
 
 mkdir checkpoints && cd checkpoints
 wget https://huggingface.co/camenduru/GRM/resolve/main/grm_u.pth
-wget https://huggingface.co/camenduru/GRM/resolve/main/instant3d.pth
+# wget https://huggingface.co/camenduru/GRM/resolve/main/instant3d.pth
+wget https://huggingface.co/camenduru/sv3d/resolve/main/sv3d_p.safetensors
 cd ..
 # Store the path of the Conda interpreter
 CONDA_INTERPRETER_PATH=$(which python)

@@ -1,6 +1,6 @@
 from torchvision.transforms import ToTensor
-from sgm.util import default, instantiate_from_config
-from sgm.inference.helpers import embed_watermark
+from ...sgm.util import default, instantiate_from_config
+from ...sgm.inference.helpers import embed_watermark
 from scripts.util.detection.nsfw_and_watermark_dectection import DeepFloydDataFiltering
 from rembg import remove
 from PIL import Image

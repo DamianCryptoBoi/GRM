@@ -1,16 +1,3 @@
-from torchvision.transforms import ToTensor
-from sgm.util import default, instantiate_from_config
-from sgm.inference.helpers import embed_watermark
-from scripts.util.detection.nsfw_and_watermark_dectection import DeepFloydDataFiltering
-from rembg import remove
-from PIL import Image
-from omegaconf import OmegaConf
-from fire import Fire
-from einops import rearrange, repeat
-import torch
-import numpy as np
-import imageio
-import cv2
 import math
 import os
 import sys
@@ -18,9 +5,20 @@ from glob import glob
 from pathlib import Path
 from typing import List, Optional
 
-sys.path.append(os.path.realpath(
-    os.path.join(os.path.dirname(__file__), "../../")))
-
+sys.path.append(os.path.realpath(os.path.join(os.path.dirname(__file__), "../../")))
+import cv2
+import imageio
+import numpy as np
+import torch
+from einops import rearrange, repeat
+from fire import Fire
+from omegaconf import OmegaConf
+from PIL import Image
+from rembg import remove
+from scripts.util.detection.nsfw_and_watermark_dectection import DeepFloydDataFiltering
+from sgm.inference.helpers import embed_watermark
+from sgm.util import default, instantiate_from_config
+from torchvision.transforms import ToTensor
 
 def build_sv3d_model(num_steps,
                      device,
@@ -29,6 +27,7 @@ def build_sv3d_model(num_steps,
     num_steps = default(num_steps, 50)
     model_config = "third_party/generative_models/scripts/sampling/configs/sv3d_p.yaml"
 
+
     model, filter = load_model(
         model_config,
         device,
@@ -36,13 +35,11 @@ def build_sv3d_model(num_steps,
         num_steps,
         verbose,
     )
-    return model, filter
-
+    return model,filter
 
 def sample(
     model: None,
-    # Can either be image file or folder with image files
-    input_path: str = "assets/test_image.png",
+    input_path: str = "assets/test_image.png",  # Can either be image file or folder with image files
     num_frames: Optional[int] = None,  # 21 for SV3D
     num_steps: Optional[int] = None,
     version: str = "svd",
@@ -50,8 +47,7 @@ def sample(
     motion_bucket_id: int = 127,
     cond_aug: float = 0.02,
     seed: int = 23,
-    # Number of frames decoded at a time! This eats most VRAM. Reduce if necessary.
-    decoding_t: int = 14,
+    decoding_t: int = 14,  # Number of frames decoded at a time! This eats most VRAM. Reduce if necessary.
     device: str = "cuda",
     output_folder: Optional[str] = None,
     elevations_deg: Optional[float | List[float]] = 10.0,  # For SV3D
@@ -67,14 +63,12 @@ def sample(
     if version == "svd":
         num_frames = default(num_frames, 14)
         num_steps = default(num_steps, 25)
-        output_folder = default(
-            output_folder, "outputs/simple_video_sample/svd/")
+        output_folder = default(output_folder, "outputs/simple_video_sample/svd/")
         model_config = "scripts/sampling/configs/svd.yaml"
     elif version == "svd_xt":
         num_frames = default(num_frames, 25)
         num_steps = default(num_steps, 30)
-        output_folder = default(
-            output_folder, "outputs/simple_video_sample/svd_xt/")
+        output_folder = default(output_folder, "outputs/simple_video_sample/svd_xt/")
         model_config = "scripts/sampling/configs/svd_xt.yaml"
     elif version == "svd_image_decoder":
         num_frames = default(num_frames, 14)
@@ -93,15 +87,13 @@ def sample(
     elif version == "sv3d_u":
         num_frames = 21
         num_steps = default(num_steps, 50)
-        output_folder = default(
-            output_folder, "outputs/simple_video_sample/sv3d_u/")
+        output_folder = default(output_folder, "outputs/simple_video_sample/sv3d_u/")
         model_config = "scripts/sampling/configs/sv3d_u.yaml"
         cond_aug = 1e-5
     elif version == "sv3d_p":
         num_frames = 21
         num_steps = default(num_steps, 50)
-        output_folder = default(
-            output_folder, "outputs/simple_video_sample/sv3d_p/")
+        output_folder = default(output_folder, "outputs/simple_video_sample/sv3d_p/")
         model_config = "third_party/generative_models/scripts/sampling/configs/sv3d_p.yaml"
         cond_aug = 1e-5
         if isinstance(elevations_deg, float) or isinstance(elevations_deg, int):
@@ -115,8 +107,7 @@ def sample(
         assert (
             len(azimuths_deg) == num_frames
         ), f"Please provide a list of {num_frames} values for azimuths_deg! Given {len(azimuths_deg)}"
-        azimuths_rad = [np.deg2rad((a - azimuths_deg[-1]) % 360)
-                        for a in azimuths_deg]
+        azimuths_rad = [np.deg2rad((a - azimuths_deg[-1]) % 360) for a in azimuths_deg]
         azimuths_rad[:-1].sort()
     else:
         raise ValueError(f"Version {version} does not exist.")
@@ -179,16 +170,14 @@ def sample(
             padded_image = np.zeros((side_len, side_len, 4), dtype=np.uint8)
             center = side_len // 2
             padded_image[
-                center - h // 2: center - h // 2 + h,
-                center - w // 2: center - w // 2 + w,
-            ] = image_arr[y: y + h, x: x + w]
+                center - h // 2 : center - h // 2 + h,
+                center - w // 2 : center - w // 2 + w,
+            ] = image_arr[y : y + h, x : x + w]
             # resize frame to 576x576
-            rgba = Image.fromarray(padded_image).resize(
-                (576, 576), Image.LANCZOS)
+            rgba = Image.fromarray(padded_image).resize((576, 576), Image.LANCZOS)
             # white bg
             rgba_arr = np.array(rgba) / 255.0
-            rgb = rgba_arr[..., :3] * rgba_arr[..., -1:] + \
-                (1 - rgba_arr[..., -1:])
+            rgb = rgba_arr[..., :3] * rgba_arr[..., -1:] + (1 - rgba_arr[..., -1:])
             input_image = Image.fromarray((rgb * 255).astype(np.uint8))
 
         else:
@@ -201,8 +190,7 @@ def sample(
                     width, height = map(lambda x: x - x % 64, (w, h))
                     input_image = input_image.resize((width, height))
                     print(
-                        f"WARNING: Your image is of size {h}x{
-                            w} which is not divisible by 64. We are resizing to {height}x{width}!"
+                        f"WARNING: Your image is of size {h}x{w} which is not divisible by 64. We are resizing to {height}x{width}!"
                     )
 
         image = ToTensor()(input_image)
@@ -246,8 +234,7 @@ def sample(
         with torch.no_grad():
             with torch.autocast(device):
                 batch, batch_uc = get_batch(
-                    get_unique_embedder_keys_from_conditioner(
-                        model.conditioner),
+                    get_unique_embedder_keys_from_conditioner(model.conditioner),
                     value_dict,
                     [1, num_frames],
                     T=num_frames,
@@ -264,11 +251,9 @@ def sample(
 
                 for k in ["crossattn", "concat"]:
                     uc[k] = repeat(uc[k], "b ... -> b t ...", t=num_frames)
-                    uc[k] = rearrange(
-                        uc[k], "b t ... -> (b t) ...", t=num_frames)
+                    uc[k] = rearrange(uc[k], "b t ... -> (b t) ...", t=num_frames)
                     c[k] = repeat(c[k], "b ... -> b t ...", t=num_frames)
-                    c[k] = rearrange(
-                        c[k], "b t ... -> (b t) ...", t=num_frames)
+                    c[k] = rearrange(c[k], "b t ... -> (b t) ...", t=num_frames)
 
                 randn = torch.randn(shape, device=device)
 
@@ -288,15 +273,13 @@ def sample(
                 samples_x = model.decode_first_stage(samples_z)
                 if "sv3d" in version:
                     samples_x[-1:] = value_dict["cond_frames_without_noise"]
-                samples = torch.clamp(
-                    (samples_x + 1.0) / 2.0, min=0.0, max=1.0)
+                samples = torch.clamp((samples_x + 1.0) / 2.0, min=0.0, max=1.0)
 
                 os.makedirs(output_folder, exist_ok=True)
                 base_count = len(glob(os.path.join(output_folder, "*.mp4")))
 
                 imageio.imwrite(
-                    os.path.join(output_folder, f"{
-                                 base_count:06d}.jpg"), input_image
+                    os.path.join(output_folder, f"{base_count:06d}.jpg"), input_image
                 )
 
                 samples = embed_watermark(samples)
@@ -307,12 +290,10 @@ def sample(
                     .numpy()
                     .astype(np.uint8)
                 )
-                video_path = os.path.join(
-                    output_folder, f"{base_count:06d}.mp4")
+                video_path = os.path.join(output_folder, f"{base_count:06d}.mp4")
                 imageio.mimwrite(video_path, vid)
 
     return vid
-
 
 def get_unique_embedder_keys_from_conditioner(conditioner):
     return list(set([x.input_key for x in conditioner.embedders]))

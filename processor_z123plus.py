@@ -308,14 +308,15 @@ def zero123plus_v12(
 class GRMProcessorZ123Plus:
     def __init__(self) -> None:
         print("Init models")
-        self.grm_uniform_path = 'checkpoints/grm_u.pth'
-        self.grm_uniform_model, self.grm_uniform_config = build_grm_model(
-            self.grm_uniform_path)
+        # grm_zero123plus_path = 'checkpoints/grm_zero123plus.pth'
+        # self.grm_zero123plus_model, self.grm_zero123plus_config = build_grm_model(grm_zero123plus_path)
+        self.grm_random_model, self.grm_random_config = build_grm_model('checkpoints/grm_r.pth')
+
         self.zero123 = DiffusionPipeline.from_pretrained(
                 "sudo-ai/zero123plus-v1.2", custom_pipeline="sudo-ai/zero123plus-pipeline",
                 torch_dtype=torch.float16,
                 local_files_only=False,
-                
+
             )
         self.zero123.scheduler = EulerAncestralDiscreteScheduler.from_config(
             self.zero123.scheduler.config, timestep_spacing='trailing'

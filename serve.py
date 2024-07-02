@@ -64,7 +64,7 @@ class DiffUsers:
                 return self.generate_image(input.prompt)
 
 
-processor = GRMProcessorSV3D()
+processor = GRMProcessorZ123Plus()
 diffusers = DiffUsers()
 app = FastAPI()
 

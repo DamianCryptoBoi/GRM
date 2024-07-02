@@ -1,6 +1,6 @@
 from io import BytesIO
 from fastapi import FastAPI, Form
-from processor_sv3d import GRMProcessorSV3D
+from processor_z123plus import GRMProcessorZ123Plus
 import uvicorn
 from diffusers import AutoPipelineForText2Image
 import torch

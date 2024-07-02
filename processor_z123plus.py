@@ -314,7 +314,8 @@ class GRMProcessorZ123Plus:
         self.zero123 = DiffusionPipeline.from_pretrained(
                 "sudo-ai/zero123plus-v1.2", custom_pipeline="sudo-ai/zero123plus-pipeline",
                 torch_dtype=torch.float16,
-                local_files_only=True,
+                local_files_only=False,
+                
             )
         self.zero123.scheduler = EulerAncestralDiscreteScheduler.from_config(
             self.zero123.scheduler.config, timestep_spacing='trailing'

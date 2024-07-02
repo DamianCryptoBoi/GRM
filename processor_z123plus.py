@@ -185,7 +185,9 @@ def images2gaussian(images, c2ws, fxfycxcy, model, gs_path, video_path, mesh_pat
                 if gs[key] is not None:
                     gs[key] = gs[key][filter_mask[:, 0], filter_mask[:, 1]].unsqueeze(0)
 
-            save_gaussian(gs, gs_path, model, opacity_thr=0.05)
+            # save_gaussian(gs, gs_path, model, opacity_thr=0.05)
+            save_gaussian(gs, gs_path, model)
+
 
 def pad_image_to_fit_fov(image, new_fov, old_fov):
     img = Image.fromarray(image)

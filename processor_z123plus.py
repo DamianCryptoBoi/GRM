@@ -185,8 +185,8 @@ def images2gaussian(images, c2ws, fxfycxcy, model, gs_path, video_path, mesh_pat
                 if gs[key] is not None:
                     gs[key] = gs[key][filter_mask[:, 0], filter_mask[:, 1]].unsqueeze(0)
 
-            # save_gaussian(gs, gs_path, model, opacity_thr=0.05)
-            save_gaussian(gs, gs_path, model)
+            save_gaussian(gs, gs_path, model, opacity_thr=0.05)
+            # save_gaussian(gs, gs_path, model)
 
 
 def pad_image_to_fit_fov(image, new_fov, old_fov):
@@ -310,12 +310,11 @@ def zero123plus_v12(
 class GRMProcessorZ123Plus:
     def __init__(self) -> None:
         print("Init models")
-        # grm_zero123plus_path = 'checkpoints/grm_zero123plus.pth'
-        # self.grm_zero123plus_model, self.grm_zero123plus_config = build_grm_model(grm_zero123plus_path)
-        self.grm_random_model, self.grm_random_config = build_grm_model('checkpoints/grm_r.pth')
+        grm_zero123plus_path = 'checkpoints/grm_zero123plus.pth'
+        self.grm_zero123plus_model, self.grm_zero123plus_config = build_grm_model(grm_zero123plus_path)
 
         self.zero123 = DiffusionPipeline.from_pretrained(
-                "sudo-ai/zero123plus-v1.2", custom_pipeline="sudo-ai/zero123plus-pipeline",
+                "sudo-ai/zero123plus-v1.1", custom_pipeline="sudo-ai/zero123plus-pipeline",
                 torch_dtype=torch.float16,
                 local_files_only=False,
 
@@ -328,10 +327,10 @@ class GRMProcessorZ123Plus:
         print("Done")
 
     def process(self, img_path: str, steps: int = 30):
-        return zero123plus_v12(
+        return zero123plus_v11(
               self.zero123,
-              grm_model=self.grm_random_model,
-              grm_model_cfg=self.grm_random_config,
+              grm_model=self.grm_zero123plus_model,
+              grm_model_cfg=self.grm_zero123plus_config,
               image_path=img_path,
-              num_steps=steps,
+              num_steps=steps
               )

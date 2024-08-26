@@ -20,7 +20,7 @@ conda activate grm
 conda info --env
 CUDA_HOME=${CONDA_PREFIX}
 
-pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu121
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu118
 
 cd third_party/diff-gaussian-rasterization &&  pip install -e .
 

@@ -27,10 +27,15 @@ cd third_party/diff-gaussian-rasterization &&  pip install -e .
 cd ../..
 
 mkdir checkpoints && cd checkpoints
+
 wget https://huggingface.co/camenduru/GRM/resolve/main/grm_r.pth
+
 wget https://huggingface.co/camenduru/GRM/resolve/main/grm_u.pth
+
 wget https://huggingface.co/camenduru/GRM/resolve/main/grm_zero123plus.pth
+
 wget https://huggingface.co/camenduru/GRM/resolve/main/instant3d.pth
+
 cd ..
 
 

@@ -16,5 +16,6 @@ dependencies:
     - mesa-libgl-devel-cos7-x86_64=18.3.4
     - libglvnd-devel-cos7-x86_64=1.0.1
     - libpq=16.1
+    - conda-forge::ninja
     - pip:
           - -r requirements.txt

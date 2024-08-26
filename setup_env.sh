@@ -22,7 +22,9 @@ CUDA_HOME=${CONDA_PREFIX}
 
 pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu121
 
-cd third_party/diff-gaussian-rasterization &&  pip install -e . && cd ../..
+cd third_party/diff-gaussian-rasterization &&  pip install -e .
+
+cd ../..
 
 mkdir checkpoints && cd checkpoints
 wget https://huggingface.co/camenduru/GRM/resolve/main/grm_r.pth

@@ -7,7 +7,7 @@ channels:
 dependencies:
     - python=3.10
     - pip
-    - cuda-toolkit=12.1.1
+    - cuda-toolkit=11.8
     - cudnn=8.9.7
     - cmake=3.28.2
     - gcc=11.4

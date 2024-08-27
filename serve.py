@@ -32,9 +32,9 @@ def get_random_seed():
 @app.post("/generate")
 async def generate(prompt: str = Form(),):
     start_time = time.time()
-    img = grm.run_text_to_img(seed=get_random_seed(),h=512, w=512, prompt=prompt+ ', best quality, sharp focus, photorealistic, extremely detailed', negative_prompt='worst quality, low quality, depth of field, blurry, out of focus, low-res, illustration, painting, drawing', steps=32, cfg_scale=7)
-    img = grm.run_segmentation(img)
-    gs_path = grm.run_img_to_3d(seed=get_random_seed(), image=img, model="Zero123++ v1.2",cache_dir="/data")
+
+    gs_path = grm.run_instant3d(seed=get_random_seed(),prompt=prompt + ', best quality, sharp focus, photorealistic, extremely detailed')
+
     # read gs model from file to buffer
     buffer = BytesIO()
     with open(gs_path, 'rb') as file:

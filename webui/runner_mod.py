@@ -641,13 +641,13 @@ class GRMRunner:
         self.zero123plus_pad_ratio = 0.8
         self.zero123plus1_2_pad_ratio = 0.9
 
-        # self.zero123plus = Zero123PlusPipeline.from_pretrained(
-        #     "sudo-ai/zero123plus-v1.1",
-        #     torch_dtype=torch.bfloat16,
-        # )
-        # self.zero123plus.scheduler = EulerAncestralDiscreteScheduler.from_config(
-        #     self.zero123plus.scheduler.config, timestep_spacing='trailing'
-        # )
+        self.zero123plus = Zero123PlusPipeline.from_pretrained(
+            "sudo-ai/zero123plus-v1.1",
+            torch_dtype=torch.bfloat16,
+        )
+        self.zero123plus.scheduler = EulerAncestralDiscreteScheduler.from_config(
+            self.zero123plus.scheduler.config, timestep_spacing='trailing'
+        )
         # self.zero123plus.to(device)
 
         self.zero123plus1_2 = Zero123PlusPipeline.from_pretrained(

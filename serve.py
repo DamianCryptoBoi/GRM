@@ -28,5 +28,6 @@ gs = grm.run_img_to_3d(seed=69420, image=img, model="Zero123++ v1.2",cache_dir="
 end_time = time.time()
 print("Time taken: ", end_time-start_time)
 print(gs)
+time.sleep(100)
 
 

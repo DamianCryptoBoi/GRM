@@ -792,7 +792,7 @@ class GRMRunner:
             guidance_scale=7.5,
             num_steps=30,
             gaussian_std=0.1,
-            mesh_renderer=self.mesh_renderer,
+            mesh_renderer=None,
             fuse_mesh=fuse_mesh,
             cache_dir=output_dir)
         out_gs = os.path.join(output_dir, 'gs.ply')

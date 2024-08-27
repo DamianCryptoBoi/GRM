@@ -16,17 +16,26 @@ from webui.tab_instant3d import create_interface_instant3d
 from webui.runner_mod import GRMRunner
 import fastapi
 import time
+import uvicorn
+import random
 
 app = fastapi.FastAPI()
 grm = GRMRunner(torch.device('cuda'))
 
+def get_random_seed():
+    return random.randint(0, 10000000)
 
-start_time = time.time()
-img = grm.run_text_to_img(seed=69420,h=512, w=512, prompt='a wooden carving of a wise old turtle, best quality, sharp focus, photorealistic, extremely detailed', negative_prompt='worst quality, low quality, depth of field, blurry, out of focus, low-res, illustration, painting, drawing', steps=20, cfg_scale=7)
-img = grm.run_segmentation(img)
-gs = grm.run_img_to_3d(seed=69420, image=img, model="Zero123++ v1.2",cache_dir="/data")
-end_time = time.time()
-print("Time taken: ", end_time-start_time)
-print(gs)
+@app.get("/generate")
+def generate(prompt: str):
+    start_time = time.time()
+    seed = random.randint(0, 10000000)
+    img = grm.run_text_to_img(seed=get_random_seed(),h=512, w=512, prompt=prompt+ ', best quality, sharp focus, photorealistic, extremely detailed', negative_prompt='worst quality, low quality, depth of field, blurry, out of focus, low-res, illustration, painting, drawing', steps=20, cfg_scale=7)
+    img = grm.run_segmentation(img)
+    gs = grm.run_img_to_3d(seed=get_random_seed(), image=img, model="Zero123++ v1.2",cache_dir="/data")
+    end_time = time.time()
+    print("Time taken: ", end_time-start_time)
+    return gs
 
 
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8193)

@@ -22,6 +22,9 @@ grm = GRMRunner(torch.device('cuda'))
 
 
 img = grm.run_text_to_img(seed=69420,h=512, w=512, prompt='a wooden carving of a wise old turtle, best quality, sharp focus, photorealistic, extremely detailed', negative_prompt='worst quality, low quality, depth of field, blurry, out of focus, low-res, illustration, painting, drawing', steps=20, cfg_scale=7)
+img = grm.run_segmentation(img)
+gs = grm.run_img_to_3d(seed=69420, image=img, model="Zero123++ v1.2", steps=20, cfg_scale=7)
 
-print(img)
+print(gs)
+
 

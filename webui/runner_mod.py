@@ -723,7 +723,7 @@ class GRMRunner:
 
         return Image.fromarray(in_img)
 
-    def run_img_to_3d(self, seed, image, model, fuse_mesh, cache_dir=None):
+    def run_img_to_3d(self, seed, image, model, fuse_mesh=False, cache_dir=None):
         torch.set_grad_enabled(False)
         print(f'\nRunning image-to-3d with seed {seed}...')
         output_dir = os.path.join(cache_dir, f'output_{uuid.uuid4()}')
@@ -767,14 +767,14 @@ class GRMRunner:
                 fuse_mesh=fuse_mesh, radius=1.75)
         else:
             raise ValueError(f'Unknown model: {model}')
-        out_video = os.path.join(output_dir, 'gs.mp4')
+        # out_video = os.path.join(output_dir, 'gs.mp4')
         out_gs = os.path.join(output_dir, 'gs.ply')
-        out_gs_vis = os.path.join(output_dir, 'gs_vis.ply')
-        out_mesh = os.path.join(output_dir, 'mesh.glb') if fuse_mesh else None
+        # out_gs_vis = os.path.join(output_dir, 'gs_vis.ply')
+        # out_mesh = os.path.join(output_dir, 'mesh.glb') if fuse_mesh else None
 
         torch.cuda.empty_cache()
 
-        return out_gs_vis, out_gs, out_video, out_mesh
+        return out_gs
 
     # def run_instant3d(self, seed, prompt, fuse_mesh, cache_dir=None):
     #     torch.set_grad_enabled(False)

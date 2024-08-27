@@ -21,6 +21,7 @@ import random
 from io import BytesIO
 import base64
 import requests
+from fastapi import FastAPI, Depends, Form
 
 app = fastapi.FastAPI()
 grm = GRMRunner(torch.device('cuda'))
@@ -29,7 +30,7 @@ def get_random_seed():
     return random.randint(0, 10000000)
 
 @app.post("/generate")
-def generate(prompt: str):
+async def generate(prompt: str = Form(),):
     start_time = time.time()
     img = grm.run_text_to_img(seed=get_random_seed(),h=512, w=512, prompt=prompt+ ', best quality, sharp focus, photorealistic, extremely detailed', negative_prompt='worst quality, low quality, depth of field, blurry, out of focus, low-res, illustration, painting, drawing', steps=20, cfg_scale=7)
     img = grm.run_segmentation(img)

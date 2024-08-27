@@ -18,6 +18,9 @@ import fastapi
 import time
 import uvicorn
 import random
+from io import BytesIO
+import base64
+import requests
 
 app = fastapi.FastAPI()
 grm = GRMRunner(torch.device('cuda'))
@@ -28,13 +31,21 @@ def get_random_seed():
 @app.get("/generate")
 def generate(prompt: str):
     start_time = time.time()
-    seed = random.randint(0, 10000000)
     img = grm.run_text_to_img(seed=get_random_seed(),h=512, w=512, prompt=prompt+ ', best quality, sharp focus, photorealistic, extremely detailed', negative_prompt='worst quality, low quality, depth of field, blurry, out of focus, low-res, illustration, painting, drawing', steps=20, cfg_scale=7)
     img = grm.run_segmentation(img)
-    gs = grm.run_img_to_3d(seed=get_random_seed(), image=img, model="Zero123++ v1.2",cache_dir="/data")
+    gs_path = grm.run_img_to_3d(seed=get_random_seed(), image=img, model="Zero123++ v1.2",cache_dir="/data")
+    # read gs model from file to buffer
+    buffer = BytesIO()
+    with open(gs_path, 'rb') as file:
+        buffer.write(file.read())
+    buffer.seek(0)
+    buffer = base64.b64encode(buffer.getbuffer()).decode("utf-8")
+    response = requests.post("http://localhost:8094/validate_ply/", json={"prompt": prompt, "data": buffer, "data_ver":1})
+    score = response.json().get("score", 0)
+    print(f"Prompt: {prompt.strip()}, Score: {score}")
     end_time = time.time()
     print("Time taken: ", end_time-start_time)
-    return gs
+    return score
 
 
 if __name__ == "__main__":

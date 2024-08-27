@@ -632,8 +632,8 @@ class GRMRunner:
         # grm_uniform_path = 'checkpoints/grm_u.pth'
         # self.grm_uniform_model, self.grm_uniform_config = build_grm_model(grm_uniform_path)
 
-        # grm_zero123plus_path = 'checkpoints/grm_zero123plus.pth'
-        # self.grm_zero123plus_model, self.grm_zero123plus_config = build_grm_model(grm_zero123plus_path)
+        grm_zero123plus_path = 'checkpoints/grm_zero123plus.pth'
+        self.grm_zero123plus_model, self.grm_zero123plus_config = build_grm_model(grm_zero123plus_path)
 
         grm_random_path = 'checkpoints/grm_r.pth'
         self.grm_random_model, self.grm_random_config = build_grm_model(grm_random_path)

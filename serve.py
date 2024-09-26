@@ -38,7 +38,7 @@ def load_image_from_url(input_image: str) -> Image.Image:
     return image
 
 @app.post("/generate")
-async def generate(prompt: str = Form(),):
+async def generate(prompt: str = Form()):
     start_time = time.time()
     img_url = replicate.run("black-forest-labs/flux-schnell",
         input={
@@ -49,15 +49,14 @@ async def generate(prompt: str = Form(),):
     print("Segmentation completed")
     gs_path = grm.run_img_to_3d(seed=get_random_seed(),image=img)
     print("GS Path: ", gs_path)
-    # # read gs model from file to buffer
-    # buffer = BytesIO()
-    # with open(gs_path, 'rb') as file:
-    #     buffer.write(file.read())
-    # buffer.seek(0)
-    # buffer = base64.b64encode(buffer.getbuffer()).decode("utf-8")
-    # response = requests.post("http://localhost:8094/validate_ply/", json={"prompt": prompt, "data": buffer, "data_ver":1})
-    # score = response.json().get("score", 0)
-    score = 0
+    # read gs model from file to buffer
+    buffer = BytesIO()
+    with open(gs_path, 'rb') as file:
+        buffer.write(file.read())
+    buffer.seek(0)
+    buffer = base64.b64encode(buffer.getbuffer()).decode("utf-8")
+    response = requests.post("http://localhost:8094/validate_ply/", json={"prompt": prompt, "data": buffer, "data_ver":1})
+    score = response.json().get("score", 0)
     print(f"Prompt: {prompt.strip()}, Score: {score}")
     end_time = time.time()
     print("Time taken: ", end_time-start_time)

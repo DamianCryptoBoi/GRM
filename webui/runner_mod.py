@@ -726,7 +726,7 @@ class GRMRunner:
 
         return Image.fromarray(in_img)
 
-    def run_img_to_3d(self, seed, image, model='Zero123++ v1.2', fuse_mesh=False, cache_dir=None):
+    def run_img_to_3d(self, seed, image, model='Zero123++ v1.2', fuse_mesh=False, cache_dir="/output"):
         torch.set_grad_enabled(False)
         print(f'\nRunning image-to-3d with seed {seed}...')
         output_dir = os.path.join(cache_dir, f'output_{uuid.uuid4()}')

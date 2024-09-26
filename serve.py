@@ -42,7 +42,7 @@ async def generate(prompt: str = Form()):
     start_time = time.time()
     img_url = replicate.run("black-forest-labs/flux-schnell",
         input={
-            "prompt": "isometric 3D icon of a " +prompt+", white background",
+            "prompt": "3D icon of a " +prompt,
         })[0]
     print("Image URL: ", img_url)
     img = grm.run_segmentation(load_image_from_url(img_url))

@@ -45,7 +45,7 @@ async def generate(prompt: str = Form(),):
             "prompt": "isometric 3D icon of a " +prompt+", white background",
         })[0]
     print("Image URL: ", img_url)
-    # img = grm.run_segmentation(load_image_from_url(img_url))
+    img = grm.run_segmentation(load_image_from_url(img_url))
     # gs_path = grm.run_img_to_3d(seed=get_random_seed(),image=img)
     # # read gs model from file to buffer
     # buffer = BytesIO()

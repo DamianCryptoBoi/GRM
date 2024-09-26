@@ -44,16 +44,18 @@ async def generate(prompt: str = Form(),):
         input={
             "prompt": "isometric 3D icon of a " +prompt+", white background",
         })[0]
-    img = grm.run_segmentation(load_image_from_url(img_url))
-    gs_path = grm.run_img_to_3d(seed=get_random_seed(),image=img)
-    # read gs model from file to buffer
-    buffer = BytesIO()
-    with open(gs_path, 'rb') as file:
-        buffer.write(file.read())
-    buffer.seek(0)
-    buffer = base64.b64encode(buffer.getbuffer()).decode("utf-8")
-    response = requests.post("http://localhost:8094/validate_ply/", json={"prompt": prompt, "data": buffer, "data_ver":1})
-    score = response.json().get("score", 0)
+    print("Image URL: ", img_url)
+    # img = grm.run_segmentation(load_image_from_url(img_url))
+    # gs_path = grm.run_img_to_3d(seed=get_random_seed(),image=img)
+    # # read gs model from file to buffer
+    # buffer = BytesIO()
+    # with open(gs_path, 'rb') as file:
+    #     buffer.write(file.read())
+    # buffer.seek(0)
+    # buffer = base64.b64encode(buffer.getbuffer()).decode("utf-8")
+    # response = requests.post("http://localhost:8094/validate_ply/", json={"prompt": prompt, "data": buffer, "data_ver":1})
+    # score = response.json().get("score", 0)
+    score = 0
     print(f"Prompt: {prompt.strip()}, Score: {score}")
     end_time = time.time()
     print("Time taken: ", end_time-start_time)

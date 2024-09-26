@@ -46,7 +46,9 @@ async def generate(prompt: str = Form(),):
         })[0]
     print("Image URL: ", img_url)
     img = grm.run_segmentation(load_image_from_url(img_url))
-    # gs_path = grm.run_img_to_3d(seed=get_random_seed(),image=img)
+    print("Segmentation completed")
+    gs_path = grm.run_img_to_3d(seed=get_random_seed(),image=img)
+    print("GS Path: ", gs_path)
     # # read gs model from file to buffer
     # buffer = BytesIO()
     # with open(gs_path, 'rb') as file:

@@ -22,6 +22,8 @@ from io import BytesIO
 import base64
 import requests
 from fastapi import FastAPI, Depends, Form
+import replicate
+from PIL import Image
 
 app = fastapi.FastAPI()
 grm = GRMRunner(torch.device('cuda'))
@@ -29,12 +31,21 @@ grm = GRMRunner(torch.device('cuda'))
 def get_random_seed():
     return random.randint(0, 10000000)
 
+def load_image_from_url(input_image: str) -> Image.Image:
+    response = requests.get(input_image)
+    response.raise_for_status()  # Raise an exception for HTTP errors
+    image = Image.open(BytesIO(response.content))
+    return image
+
 @app.post("/generate")
 async def generate(prompt: str = Form(),):
     start_time = time.time()
-
-    gs_path = grm.run_instant3d(seed=get_random_seed(),prompt=prompt + ', best quality, sharp focus, photorealistic, extremely detailed')
-
+    img_url = replicate.run("black-forest-labs/flux-schnell",
+        input={
+            "prompt": "isometric 3D icon of a " +prompt+", white background",
+        })[0]
+    img = grm.run_segmentation(load_image_from_url(img_url))
+    gs_path = grm.run_img_to_3d(seed=get_random_seed(),image=img)
     # read gs model from file to buffer
     buffer = BytesIO()
     with open(gs_path, 'rb') as file:

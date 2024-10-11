@@ -541,23 +541,11 @@ class FrozenOpenCLIPEmbedder(AbstractEmbModel):
         z = self.encode_with_transformer(tokens.to(self.device))
         return z
 
-    # def encode_with_transformer(self, text):
-    #     x = self.model.token_embedding(text)  # [batch_size, n_ctx, d_model]
-    #     x = x + self.model.positional_embedding
-    #     x = x.permute(1, 0, 2)  # NLD -> LND
-    #     x = self.text_transformer_forward(x, attn_mask=self.model.attn_mask)
-    #     x = x.permute(1, 0, 2)  # LND -> NLD
-    #     x = self.model.ln_final(x)
-    #     return x
-
     def encode_with_transformer(self, text):
         x = self.model.token_embedding(text)  # [batch_size, n_ctx, d_model]
         x = x + self.model.positional_embedding
         x = x.permute(1, 0, 2)  # NLD -> LND
-        attn_mask = self.model.attn_mask
-        if attn_mask is not None and attn_mask.shape != (1, 1):
-            attn_mask = attn_mask.unsqueeze(0).unsqueeze(0)  # Adjust shape to (1, 1)
-        x = self.text_transformer_forward(x, attn_mask=attn_mask)
+        x = self.text_transformer_forward(x, attn_mask=self.model.attn_mask)
         x = x.permute(1, 0, 2)  # LND -> NLD
         x = self.model.ln_final(x)
         return x

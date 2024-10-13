@@ -56,7 +56,7 @@ async def generate(prompt: str = Form()):
         buffer.write(file.read())
     buffer.seek(0)
     buffer = base64.b64encode(buffer.getbuffer()).decode("utf-8")
-    response = requests.post("http://localhost:8094/validate_ply/", json={"prompt": prompt, "data": buffer, "data_ver":1})
+    response = requests.post("http://localhost:8094/validate_ply/", json={"prompt": prompt, "data": buffer})
     score = response.json().get("score", 0)
     print(f"Prompt: {prompt.strip()}")
     print(response.json())

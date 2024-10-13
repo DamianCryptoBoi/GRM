@@ -787,7 +787,7 @@ class GRMRunner:
             grm_model_cfg=self.grm_uniform_config,
             prompt=prompt,
             guidance_scale=7.5,
-            num_steps=300,
+            num_steps=30,
             gaussian_std=0.1,
             mesh_renderer=self.mesh_renderer,
             fuse_mesh=fuse_mesh,

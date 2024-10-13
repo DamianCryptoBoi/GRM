@@ -45,3 +45,4 @@ fpsample
 streamlit
 Ninja
 replicate
+open-clip-torch==2.20.0

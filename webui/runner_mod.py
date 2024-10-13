@@ -343,27 +343,27 @@ def images2gaussian(images, c2ws, fxfycxcy, model, model_config, gs_path, video_
         #     out_mesh.write(mesh_path[:-4] + '.glb', flip_yz=True)
 
 
-# def pad_image_to_fit_fov(image, new_fov, old_fov):
-#     img = Image.fromarray(image)
+def pad_image_to_fit_fov(image, new_fov, old_fov):
+    img = Image.fromarray(image)
 
-#     scale_factor = math.tan(np.deg2rad(new_fov / 2)) / math.tan(np.deg2rad(old_fov / 2))
+    scale_factor = math.tan(np.deg2rad(new_fov / 2)) / math.tan(np.deg2rad(old_fov / 2))
 
-#     # Calculate the new size
-#     new_size = (int(img.size[0] * scale_factor), int(img.size[1] * scale_factor))
+    # Calculate the new size
+    new_size = (int(img.size[0] * scale_factor), int(img.size[1] * scale_factor))
 
-#     # import ipdb; ipdb.set_trace()
-#     # Calculate padding
-#     pad_width = (new_size[0] - img.size[0]) // 2
-#     pad_height = (new_size[1] - img.size[1]) // 2
+    # import ipdb; ipdb.set_trace()
+    # Calculate padding
+    pad_width = (new_size[0] - img.size[0]) // 2
+    pad_height = (new_size[1] - img.size[1]) // 2
 
-#     # Create padding
-#     padding = (pad_width, pad_height, pad_width + img.size[0], pad_height + img.size[1])
+    # Create padding
+    padding = (pad_width, pad_height, pad_width + img.size[0], pad_height + img.size[1])
 
-#     # Pad the image
-#     img_padded = Image.new(img.mode, (new_size[0], new_size[1]), color='white')
-#     img_padded.paste(img, padding)
-#     img_padded = np.array(img_padded)
-#     return img_padded
+    # Pad the image
+    img_padded = Image.new(img.mode, (new_size[0], new_size[1]), color='white')
+    img_padded.paste(img, padding)
+    img_padded = np.array(img_padded)
+    return img_padded
 
 
 def instant3d_gs(instant3d_model,
@@ -444,42 +444,42 @@ def instant3d_gs(instant3d_model,
 #     torch.cuda.empty_cache()
 
 
-# def zero123plus_v12(
-#         mv_images,
-#         grm_model,
-#         grm_model_cfg,
-#         num_steps=30,
-#         cache_dir='cache',
-#         fuse_mesh=False,
-#         mesh_renderer=None,
-#         radius=2.7,
-# ):
-#     mv_images_ = []
-#     input_size = grm_model_cfg.visual.params.input_res
-#     for idx in [0, 2, 4, 5]:
-#         image_fg = pad_image_to_fit_fov((mv_images[idx] * 255).astype(np.uint8), 50, 30)
-#         image_fg = cv2.resize(image_fg, (input_size, input_size))
-#         image_fg = image_fg / 255
-#         mv_images_.append(image_fg)
-#     mv_images = mv_images_
+def zero123plus_v12(
+        mv_images,
+        grm_model,
+        grm_model_cfg,
+        num_steps=30,
+        cache_dir='cache',
+        fuse_mesh=False,
+        mesh_renderer=None,
+        radius=2.7,
+):
+    mv_images_ = []
+    input_size = grm_model_cfg.visual.params.input_res
+    for idx in [0, 2, 4, 5]:
+        image_fg = pad_image_to_fit_fov((mv_images[idx] * 255).astype(np.uint8), 50, 30)
+        image_fg = cv2.resize(image_fg, (input_size, input_size))
+        image_fg = image_fg / 255
+        mv_images_.append(image_fg)
+    mv_images = mv_images_
 
-#     # normalize
-#     images = np.stack(mv_images, axis=0)[None]
-#     images = (images - 0.5) * 2
-#     images = torch.tensor(images).to(device)
-#     # 1, V, C, H, W
-#     images = images.permute(0, 1, 4, 2, 3)
+    # normalize
+    images = np.stack(mv_images, axis=0)[None]
+    images = (images - 0.5) * 2
+    images = torch.tensor(images).to(device)
+    # 1, V, C, H, W
+    images = images.permute(0, 1, 4, 2, 3)
 
-#     # generate input pose
-#     c2ws, fxfycxcy = generate_input_camera(2.7, [[20, 225 + 30], [20, 225 + 150], [20, 225 + 270], [-10, 225 + 330]],
-#                                            fov=50)
-#     c2ws = c2ws[None]
-#     fxfycxcy = (fxfycxcy.unsqueeze(0).unsqueeze(0)).repeat(1, c2ws.shape[1], 1)
+    # generate input pose
+    c2ws, fxfycxcy = generate_input_camera(2.7, [[20, 225 + 30], [20, 225 + 150], [20, 225 + 270], [-10, 225 + 330]],
+                                           fov=50)
+    c2ws = c2ws[None]
+    fxfycxcy = (fxfycxcy.unsqueeze(0).unsqueeze(0)).repeat(1, c2ws.shape[1], 1)
 
-#     images2gaussian(images, c2ws, fxfycxcy, grm_model, grm_model_cfg, os.path.join(cache_dir, 'gs.ply'),
-#                     os.path.join(cache_dir, 'gs.mp4'), os.path.join(cache_dir, 'mesh.ply'),
-#                     fuse_mesh=fuse_mesh, mesh_renderer=mesh_renderer, radius=radius)
-#     torch.cuda.empty_cache()
+    images2gaussian(images, c2ws, fxfycxcy, grm_model, grm_model_cfg, os.path.join(cache_dir, 'gs.ply'),
+                    os.path.join(cache_dir, 'gs.mp4'), os.path.join(cache_dir, 'mesh.ply'),
+                    fuse_mesh=fuse_mesh, mesh_renderer=mesh_renderer, radius=radius)
+    torch.cuda.empty_cache()
 
 
 # def svd3d_gs(grm_model,
@@ -532,117 +532,117 @@ def set_random_seed(seed: int,
         torch.backends.cudnn.benchmark = False
 
 
-# def join_prompts(prompt_1, prompt_2, separator=', '):
-#     if prompt_1 and prompt_2:
-#         return f'{prompt_1}{separator}{prompt_2}'
-#     else:
-#         return prompt_1 or prompt_2
+def join_prompts(prompt_1, prompt_2, separator=', '):
+    if prompt_1 and prompt_2:
+        return f'{prompt_1}{separator}{prompt_2}'
+    else:
+        return prompt_1 or prompt_2
 
 
-# def do_segmentation(in_imgs, seg_model, sam_predictor=None, padding=0, to_np=False,
-#                     bg_color=None, color_threshold=0.25, sam_erosion=0):
-#     """
-#     Args:
-#         in_imgs (np.ndarray | torch.Tensor): input images, shape (N, H, W, 3) dtype uint8 for np.ndarray, or
-#             (N, 3, H, W) dtype float for torch.Tensor
-#     """
-#     if isinstance(in_imgs, np.ndarray):
-#         assert in_imgs.dtype == np.uint8
-#         in_imgs_torch = torch.from_numpy(in_imgs.transpose(0, 3, 1, 2).astype(np.float32) / 255)
-#     else:
-#         in_imgs_torch = in_imgs
-#     assert in_imgs_torch.size(1) == 3
-#     in_imgs_torch = in_imgs_torch.to(next(seg_model.parameters()).device)
-#     if padding > 0:  # padding helps to detect foreground objects
-#         masks = seg_model(F.pad(
-#             in_imgs_torch, (padding, padding, padding, padding), mode='replicate'
-#         ))[:, :, padding:-padding, padding:-padding]
-#     else:
-#         masks = seg_model(in_imgs_torch)
-#     if bg_color is not None:
-#         bg_color_torch = in_imgs_torch.new_tensor(bg_color)[..., None, None]
-#         non_fg_mask = torch.all(bg_color_torch - color_threshold <= in_imgs_torch, dim=1) \
-#                       & torch.all(in_imgs_torch <= bg_color_torch + color_threshold, dim=1)
-#         masks[~non_fg_mask.unsqueeze(1)] = 1
-#     if sam_predictor is None:
-#         if to_np:
-#             if isinstance(in_imgs, np.ndarray):
-#                 in_imgs_np = in_imgs
-#             else:
-#                 in_imgs_np = (in_imgs.permute(0, 2, 3, 1) * 255).round().to(torch.uint8).cpu().numpy()
-#             masks_np = (masks.permute(0, 2, 3, 1) * 255).round().to(torch.uint8).cpu().numpy()
-#             out_imgs = np.concatenate([in_imgs_np, masks_np], axis=-1)
-#         else:
-#             out_imgs = torch.cat([in_imgs_torch, masks], dim=1)
-#     else:
-#         masks_sam = []
-#         if isinstance(in_imgs, np.ndarray):
-#             in_imgs_np = in_imgs
-#         else:
-#             in_imgs_np = (in_imgs.permute(0, 2, 3, 1) * 255).round().to(torch.uint8).cpu().numpy()
-#         for i, in_img in enumerate(in_imgs_np):
-#             mask_binary = masks[i, 0] > 0.5
-#             alpha_x_nonzero = mask_binary.any(dim=0).nonzero()
-#             alpha_y_nonzero = mask_binary.any(dim=1).nonzero()
-#             sam_predictor.set_image(in_img)
-#             x1 = torch.amin(alpha_x_nonzero).item()
-#             x2 = torch.amax(alpha_x_nonzero).item() + 1
-#             y1 = torch.amin(alpha_y_nonzero).item()
-#             y2 = torch.amax(alpha_y_nonzero).item() + 1
-#             bbox = np.array([x1, y1, x2, y2])
-#             pred, _, _ = sam_predictor.predict(
-#                 box=bbox,
-#                 multimask_output=True)
-#             mask = pred[-1].astype(np.uint8)
-#             if sam_erosion > 0:
-#                 kernel = np.ones((sam_erosion * 2 + 1, sam_erosion * 2 + 1), dtype=np.uint8)
-#                 mask = cv2.erode(mask, kernel, iterations=1)
-#             masks_sam.append(mask[..., None])
-#         masks_sam = np.stack(masks_sam, axis=0)
-#         if bg_color is not None:
-#             bg_color_255 = np.array(bg_color, dtype=np.float32) * 255
-#             color_threshold_255 = color_threshold * 255
-#             in_imgs_np_float = in_imgs_np.astype(np.float32)
-#             non_fg_mask = np.all(bg_color_255 - color_threshold_255 <= in_imgs_np_float, axis=-1) \
-#                           & np.all(in_imgs_np_float <= bg_color_255 + color_threshold_255, axis=-1)
-#             masks_sam[~non_fg_mask] = 1
-#         if to_np:
-#             masks_sam = masks_sam * 255
-#             out_imgs = np.concatenate([in_imgs_np, masks_sam], axis=-1)
-#         else:
-#             masks_sam = torch.from_numpy(masks_sam).to(in_imgs_torch)
-#             out_imgs = torch.cat([in_imgs_torch, masks_sam.squeeze(-1).unsqueeze(1)], dim=1)
-#     return out_imgs
+def do_segmentation(in_imgs, seg_model, sam_predictor=None, padding=0, to_np=False,
+                    bg_color=None, color_threshold=0.25, sam_erosion=0):
+    """
+    Args:
+        in_imgs (np.ndarray | torch.Tensor): input images, shape (N, H, W, 3) dtype uint8 for np.ndarray, or
+            (N, 3, H, W) dtype float for torch.Tensor
+    """
+    if isinstance(in_imgs, np.ndarray):
+        assert in_imgs.dtype == np.uint8
+        in_imgs_torch = torch.from_numpy(in_imgs.transpose(0, 3, 1, 2).astype(np.float32) / 255)
+    else:
+        in_imgs_torch = in_imgs
+    assert in_imgs_torch.size(1) == 3
+    in_imgs_torch = in_imgs_torch.to(next(seg_model.parameters()).device)
+    if padding > 0:  # padding helps to detect foreground objects
+        masks = seg_model(F.pad(
+            in_imgs_torch, (padding, padding, padding, padding), mode='replicate'
+        ))[:, :, padding:-padding, padding:-padding]
+    else:
+        masks = seg_model(in_imgs_torch)
+    if bg_color is not None:
+        bg_color_torch = in_imgs_torch.new_tensor(bg_color)[..., None, None]
+        non_fg_mask = torch.all(bg_color_torch - color_threshold <= in_imgs_torch, dim=1) \
+                      & torch.all(in_imgs_torch <= bg_color_torch + color_threshold, dim=1)
+        masks[~non_fg_mask.unsqueeze(1)] = 1
+    if sam_predictor is None:
+        if to_np:
+            if isinstance(in_imgs, np.ndarray):
+                in_imgs_np = in_imgs
+            else:
+                in_imgs_np = (in_imgs.permute(0, 2, 3, 1) * 255).round().to(torch.uint8).cpu().numpy()
+            masks_np = (masks.permute(0, 2, 3, 1) * 255).round().to(torch.uint8).cpu().numpy()
+            out_imgs = np.concatenate([in_imgs_np, masks_np], axis=-1)
+        else:
+            out_imgs = torch.cat([in_imgs_torch, masks], dim=1)
+    else:
+        masks_sam = []
+        if isinstance(in_imgs, np.ndarray):
+            in_imgs_np = in_imgs
+        else:
+            in_imgs_np = (in_imgs.permute(0, 2, 3, 1) * 255).round().to(torch.uint8).cpu().numpy()
+        for i, in_img in enumerate(in_imgs_np):
+            mask_binary = masks[i, 0] > 0.5
+            alpha_x_nonzero = mask_binary.any(dim=0).nonzero()
+            alpha_y_nonzero = mask_binary.any(dim=1).nonzero()
+            sam_predictor.set_image(in_img)
+            x1 = torch.amin(alpha_x_nonzero).item()
+            x2 = torch.amax(alpha_x_nonzero).item() + 1
+            y1 = torch.amin(alpha_y_nonzero).item()
+            y2 = torch.amax(alpha_y_nonzero).item() + 1
+            bbox = np.array([x1, y1, x2, y2])
+            pred, _, _ = sam_predictor.predict(
+                box=bbox,
+                multimask_output=True)
+            mask = pred[-1].astype(np.uint8)
+            if sam_erosion > 0:
+                kernel = np.ones((sam_erosion * 2 + 1, sam_erosion * 2 + 1), dtype=np.uint8)
+                mask = cv2.erode(mask, kernel, iterations=1)
+            masks_sam.append(mask[..., None])
+        masks_sam = np.stack(masks_sam, axis=0)
+        if bg_color is not None:
+            bg_color_255 = np.array(bg_color, dtype=np.float32) * 255
+            color_threshold_255 = color_threshold * 255
+            in_imgs_np_float = in_imgs_np.astype(np.float32)
+            non_fg_mask = np.all(bg_color_255 - color_threshold_255 <= in_imgs_np_float, axis=-1) \
+                          & np.all(in_imgs_np_float <= bg_color_255 + color_threshold_255, axis=-1)
+            masks_sam[~non_fg_mask] = 1
+        if to_np:
+            masks_sam = masks_sam * 255
+            out_imgs = np.concatenate([in_imgs_np, masks_sam], axis=-1)
+        else:
+            masks_sam = torch.from_numpy(masks_sam).to(in_imgs_torch)
+            out_imgs = torch.cat([in_imgs_torch, masks_sam.squeeze(-1).unsqueeze(1)], dim=1)
+    return out_imgs
 
 
-# def do_segmentation_pil(in_imgs, *args, **kwargs):
-#     in_imgs_np = np.stack([np.asarray(in_img) for in_img in in_imgs], axis=0)
-#     kwargs['to_np'] = True
-#     out_imgs = do_segmentation(in_imgs_np, *args, **kwargs)
-#     return out_imgs
+def do_segmentation_pil(in_imgs, *args, **kwargs):
+    in_imgs_np = np.stack([np.asarray(in_img) for in_img in in_imgs], axis=0)
+    kwargs['to_np'] = True
+    out_imgs = do_segmentation(in_imgs_np, *args, **kwargs)
+    return out_imgs
 
 
 class GRMRunner:
     def __init__(self, device):
-        # self.pipe_text_to_img = StableDiffusionPipeline.from_pretrained(
-        #     image_defaults['checkpoint'], torch_dtype=torch.bfloat16)
-        # self.pipe_text_to_img.to(device)
-        # self.pipe_text_to_img.set_use_memory_efficient_attention_xformers(
-        #     not hasattr(torch.nn.functional, 'scaled_dot_product_attention'))
+        self.pipe_text_to_img = StableDiffusionPipeline.from_pretrained(
+            image_defaults['checkpoint'], torch_dtype=torch.bfloat16)
+        self.pipe_text_to_img.to(device)
+        self.pipe_text_to_img.set_use_memory_efficient_attention_xformers(
+            not hasattr(torch.nn.functional, 'scaled_dot_product_attention'))
 
-        grm_uniform_path = 'checkpoints/grm_u.pth'
-        self.grm_uniform_model, self.grm_uniform_config = build_grm_model(grm_uniform_path)
+        # grm_uniform_path = 'checkpoints/grm_u.pth'
+        # self.grm_uniform_model, self.grm_uniform_config = build_grm_model(grm_uniform_path)
 
-        self.instant3d_model = build_instant3d_model(config_path='third_party/generative_models/configs/sd_xl_base.yaml', ckpt_path='checkpoints/instant3d.pth')
+        # self.instant3d_model = build_instant3d_model(config_path='third_party/generative_models/configs/sd_xl_base.yaml', ckpt_path='checkpoints/instant3d.pth')
 
-        # grm_zero123plus_path = 'checkpoints/grm_zero123plus.pth'
-        # self.grm_zero123plus_model, self.grm_zero123plus_config = build_grm_model(grm_zero123plus_path)
+        grm_zero123plus_path = 'checkpoints/grm_zero123plus.pth'
+        self.grm_zero123plus_model, self.grm_zero123plus_config = build_grm_model(grm_zero123plus_path)
 
-        # grm_random_path = 'checkpoints/grm_r.pth'
-        # self.grm_random_model, self.grm_random_config = build_grm_model(grm_random_path)
+        grm_random_path = 'checkpoints/grm_r.pth'
+        self.grm_random_model, self.grm_random_config = build_grm_model(grm_random_path)
 
-        # self.zero123plus_pad_ratio = 0.8
-        # self.zero123plus1_2_pad_ratio = 0.9
+        self.zero123plus_pad_ratio = 0.8
+        self.zero123plus1_2_pad_ratio = 0.9
 
         # self.zero123plus = Zero123PlusPipeline.from_pretrained(
         #     "sudo-ai/zero123plus-v1.1",
@@ -664,7 +664,7 @@ class GRMRunner:
 
         self.segmentation = TracerUniversalB7().to(device)
 
-        self.instant3d_model = build_instant3d_model(config_path='third_party/generative_models/configs/sd_xl_base.yaml', ckpt_path='checkpoints/instant3d.pth')
+        # self.instant3d_model = build_instant3d_model(config_path='third_party/generative_models/configs/sd_xl_base.yaml', ckpt_path='checkpoints/instant3d.pth')
 
         ckpt_path = hf_hub_download(
             'ybelkada/segment-anything',
@@ -711,91 +711,92 @@ class GRMRunner:
 
     #     return out_img
 
-    # def run_segmentation(self, in_img, empty_cache=True):
-    #     torch.set_grad_enabled(False)
-    #     if empty_cache:
-    #         torch.cuda.empty_cache()
-    #     in_img_np = np.asarray(in_img)
-    #     if in_img_np.shape[-1] == 4 and np.any(in_img_np[..., 3] != 255):
-    #         in_img = in_img_np
-    #     else:
-    #         in_img = do_segmentation(
-    #             in_img_np[None, :, :, :3], self.segmentation, sam_predictor=self.sam_predictor, to_np=True)[0]
-
-    #     torch.cuda.empty_cache()
-
-    #     return Image.fromarray(in_img)
-
-    # def run_img_to_3d(self, seed, image, model='Zero123++ v1.2', fuse_mesh=False, cache_dir="/output"):
-    #     torch.set_grad_enabled(False)
-    #     print(f'\nRunning image-to-3d with seed {seed}...')
-    #     output_dir = os.path.join(cache_dir, f'output_{uuid.uuid4()}')
-    #     if model == 'SV3D':
-    #         img_name = f'input_{uuid.uuid4()}.png'
-    #         image_path = os.path.join(cache_dir, img_name)
-    #         image.save(image_path)
-    #         svd3d_gs(
-    #             grm_model=self.grm_uniform_model,
-    #             grm_model_cfg=self.grm_uniform_config,
-    #             image_path=image_path,
-    #             num_steps=30,
-    #             cache_dir=output_dir,
-    #         )
-    #         out_video = os.path.join(output_dir, img_name[:-4] + '.mp4')
-    #     if model == 'Zero123++ v1.1':
-    #         in_img = pad_rgba_image(np.asarray(image), ratio=self.zero123plus_pad_ratio)
-    #         print(f'\nRunning Zero123++ generation with seed {seed}...')
-    #         init_images = self.proc_zero123plus(
-    #             seed, in_img, self.zero123plus, seg_padding=32)
-    #         zero123plus_v11(
-    #             init_images,
-    #             grm_model=self.grm_zero123plus_model,
-    #             grm_model_cfg=self.grm_zero123plus_config,
-    #             num_steps=30,
-    #             cache_dir=output_dir,
-    #             mesh_renderer=self.mesh_renderer,
-    #             fuse_mesh=fuse_mesh)
-    #     elif model == 'Zero123++ v1.2':
-    #         in_img = pad_rgba_image(np.asarray(image), ratio=self.zero123plus1_2_pad_ratio)
-    #         init_images = self.proc_zero123plus(
-    #             seed, in_img, self.zero123plus1_2, seg_padding=64)
-    #         zero123plus_v12(
-    #             init_images,
-    #             grm_model=self.grm_random_model,
-    #             grm_model_cfg=self.grm_random_config,
-    #             num_steps=30,
-    #             cache_dir=output_dir,
-    #             mesh_renderer=None,
-    #             fuse_mesh=fuse_mesh, radius=1.75)
-    #     else:
-    #         raise ValueError(f'Unknown model: {model}')
-    #     # out_video = os.path.join(output_dir, 'gs.mp4')
-    #     out_gs = os.path.join(output_dir, 'gs.ply')
-    #     # out_gs_vis = os.path.join(output_dir, 'gs_vis.ply')
-    #     # out_mesh = os.path.join(output_dir, 'mesh.glb') if fuse_mesh else None
-
-    #     torch.cuda.empty_cache()
-
-    #     return out_gs
-
-    def run_instant3d(self, seed, prompt, fuse_mesh=False, cache_dir="/data"):
+    def run_segmentation(self, in_img, empty_cache=True):
         torch.set_grad_enabled(False)
-        print(f'\nRunning Instant3D with seed {seed}...')
-        set_random_seed(seed, deterministic=True)
+        if empty_cache:
+            torch.cuda.empty_cache()
+        in_img_np = np.asarray(in_img)
+        if in_img_np.shape[-1] == 4 and np.any(in_img_np[..., 3] != 255):
+            in_img = in_img_np
+        else:
+            in_img = do_segmentation(
+                in_img_np[None, :, :, :3], self.segmentation, sam_predictor=self.sam_predictor, to_np=True)[0]
+
+        torch.cuda.empty_cache()
+
+        return Image.fromarray(in_img)
+
+    def run_img_to_3d(self, seed, image, model='Zero123++ v1.2', fuse_mesh=False, cache_dir="/output"):
+        torch.set_grad_enabled(False)
+        print(f'\nRunning image-to-3d with seed {seed}...')
         output_dir = os.path.join(cache_dir, f'output_{uuid.uuid4()}')
-        instant3d_gs(
-            self.instant3d_model,
-            grm_model=self.grm_uniform_model,
-            grm_model_cfg=self.grm_uniform_config,
-            prompt=prompt,
-            guidance_scale=7.5,
-            num_steps=30,
-            gaussian_std=0.1,
-            mesh_renderer=None,
-            fuse_mesh=fuse_mesh,
-            cache_dir=output_dir)
+        # if model == 'SV3D':
+        #     img_name = f'input_{uuid.uuid4()}.png'
+        #     image_path = os.path.join(cache_dir, img_name)
+        #     image.save(image_path)
+        #     svd3d_gs(
+        #         grm_model=self.grm_uniform_model,
+        #         grm_model_cfg=self.grm_uniform_config,
+        #         image_path=image_path,
+        #         num_steps=30,
+        #         cache_dir=output_dir,
+        #     )
+        #     out_video = os.path.join(output_dir, img_name[:-4] + '.mp4')
+        if model == 'Zero123++ v1.1':
+            pass
+            # in_img = pad_rgba_image(np.asarray(image), ratio=self.zero123plus_pad_ratio)
+            # print(f'\nRunning Zero123++ generation with seed {seed}...')
+            # init_images = self.proc_zero123plus(
+            #     seed, in_img, self.zero123plus, seg_padding=32)
+            # zero123plus_v11(
+            #     init_images,
+            #     grm_model=self.grm_zero123plus_model,
+            #     grm_model_cfg=self.grm_zero123plus_config,
+            #     num_steps=30,
+            #     cache_dir=output_dir,
+            #     mesh_renderer=self.mesh_renderer,
+            #     fuse_mesh=fuse_mesh)
+        elif model == 'Zero123++ v1.2':
+            in_img = pad_rgba_image(np.asarray(image), ratio=self.zero123plus1_2_pad_ratio)
+            init_images = self.proc_zero123plus(
+                seed, in_img, self.zero123plus1_2, seg_padding=64)
+            zero123plus_v12(
+                init_images,
+                grm_model=self.grm_random_model,
+                grm_model_cfg=self.grm_random_config,
+                num_steps=30,
+                cache_dir=output_dir,
+                mesh_renderer=None,
+                fuse_mesh=fuse_mesh, radius=1.75)
+        else:
+            raise ValueError(f'Unknown model: {model}')
+        # out_video = os.path.join(output_dir, 'gs.mp4')
         out_gs = os.path.join(output_dir, 'gs.ply')
+        # out_gs_vis = os.path.join(output_dir, 'gs_vis.ply')
+        # out_mesh = os.path.join(output_dir, 'mesh.glb') if fuse_mesh else None
 
         torch.cuda.empty_cache()
 
         return out_gs
+
+    # def run_instant3d(self, seed, prompt, fuse_mesh=False, cache_dir="/data"):
+    #     torch.set_grad_enabled(False)
+    #     print(f'\nRunning Instant3D with seed {seed}...')
+    #     set_random_seed(seed, deterministic=True)
+    #     output_dir = os.path.join(cache_dir, f'output_{uuid.uuid4()}')
+    #     instant3d_gs(
+    #         self.instant3d_model,
+    #         grm_model=self.grm_uniform_model,
+    #         grm_model_cfg=self.grm_uniform_config,
+    #         prompt=prompt,
+    #         guidance_scale=7.5,
+    #         num_steps=30,
+    #         gaussian_std=0.1,
+    #         mesh_renderer=None,
+    #         fuse_mesh=fuse_mesh,
+    #         cache_dir=output_dir)
+    #     out_gs = os.path.join(output_dir, 'gs.ply')
+
+    #     torch.cuda.empty_cache()
+
+    #     return out_gs

@@ -40,15 +40,15 @@ def load_image_from_url(input_image: str) -> Image.Image:
 @app.post("/generate")
 async def generate(prompt: str = Form()):
     start_time = time.time()
-    img_url = replicate.run("black-forest-labs/flux-schnell",
-        input={
-            "prompt": "3D icon of a " +prompt+", white background",
-        })[0]
-    print("Image URL: ", img_url)
-    img = grm.run_segmentation(load_image_from_url(img_url))
-    print("Segmentation completed")
-    gs_path = grm.run_img_to_3d(seed=get_random_seed(),image=img)
-    # gs_path = grm.run_instant3d(seed=get_random_seed(), prompt=prompt)
+    # img_url = replicate.run("black-forest-labs/flux-schnell",
+    #     input={
+    #         "prompt": "3D icon of a " +prompt+", white background",
+    #     })[0]
+    # print("Image URL: ", img_url)
+    # img = grm.run_segmentation(load_image_from_url(img_url))
+    # print("Segmentation completed")
+    # gs_path = grm.run_img_to_3d(seed=get_random_seed(),image=img)
+    gs_path = grm.run_instant3d(seed=get_random_seed(), prompt=prompt)
     print("GS Path: ", gs_path)
     # read gs model from file to buffer
     buffer = BytesIO()

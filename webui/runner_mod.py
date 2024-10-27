@@ -630,19 +630,19 @@ class GRMRunner:
         self.pipe_text_to_img.set_use_memory_efficient_attention_xformers(
             not hasattr(torch.nn.functional, 'scaled_dot_product_attention'))
 
-        # grm_uniform_path = 'checkpoints/grm_u.pth'
-        # self.grm_uniform_model, self.grm_uniform_config = build_grm_model(grm_uniform_path)
+        grm_uniform_path = 'checkpoints/grm_u.pth'
+        self.grm_uniform_model, self.grm_uniform_config = build_grm_model(grm_uniform_path)
 
-        # self.instant3d_model = build_instant3d_model(config_path='third_party/generative_models/configs/sd_xl_base.yaml', ckpt_path='checkpoints/instant3d.pth')
+        self.instant3d_model = build_instant3d_model(config_path='third_party/generative_models/configs/sd_xl_base.yaml', ckpt_path='checkpoints/instant3d.pth')
 
-        grm_zero123plus_path = 'checkpoints/grm_zero123plus.pth'
-        self.grm_zero123plus_model, self.grm_zero123plus_config = build_grm_model(grm_zero123plus_path)
+        # grm_zero123plus_path = 'checkpoints/grm_zero123plus.pth'
+        # self.grm_zero123plus_model, self.grm_zero123plus_config = build_grm_model(grm_zero123plus_path)
 
-        grm_random_path = 'checkpoints/grm_r.pth'
-        self.grm_random_model, self.grm_random_config = build_grm_model(grm_random_path)
+        # grm_random_path = 'checkpoints/grm_r.pth'
+        # self.grm_random_model, self.grm_random_config = build_grm_model(grm_random_path)
 
-        self.zero123plus_pad_ratio = 0.8
-        self.zero123plus1_2_pad_ratio = 0.9
+        # self.zero123plus_pad_ratio = 0.8
+        # self.zero123plus1_2_pad_ratio = 0.9
 
         # self.zero123plus = Zero123PlusPipeline.from_pretrained(
         #     "sudo-ai/zero123plus-v1.1",
@@ -653,24 +653,24 @@ class GRMRunner:
         # )
         # self.zero123plus.to(device)
 
-        self.zero123plus1_2 = Zero123PlusPipeline.from_pretrained(
-            "sudo-ai/zero123plus-v1.2",
-            torch_dtype=torch.bfloat16,
-        )
-        self.zero123plus1_2.scheduler = EulerAncestralDiscreteScheduler.from_config(
-            self.zero123plus1_2.scheduler.config, timestep_spacing='trailing'
-        )
-        self.zero123plus1_2.to(device)
+        # self.zero123plus1_2 = Zero123PlusPipeline.from_pretrained(
+        #     "sudo-ai/zero123plus-v1.2",
+        #     torch_dtype=torch.bfloat16,
+        # )
+        # self.zero123plus1_2.scheduler = EulerAncestralDiscreteScheduler.from_config(
+        #     self.zero123plus1_2.scheduler.config, timestep_spacing='trailing'
+        # )
+        # self.zero123plus1_2.to(device)
 
-        self.segmentation = TracerUniversalB7().to(device)
+        # self.segmentation = TracerUniversalB7().to(device)
 
         # self.instant3d_model = build_instant3d_model(config_path='third_party/generative_models/configs/sd_xl_base.yaml', ckpt_path='checkpoints/instant3d.pth')
 
-        ckpt_path = hf_hub_download(
-            'ybelkada/segment-anything',
-            'checkpoints/sam_vit_h_4b8939.pth')
-        sam = sam_model_registry['vit_h'](checkpoint=ckpt_path).to(device=device)
-        self.sam_predictor = SamPredictor(sam)
+        # ckpt_path = hf_hub_download(
+        #     'ybelkada/segment-anything',
+        #     'checkpoints/sam_vit_h_4b8939.pth')
+        # sam = sam_model_registry['vit_h'](checkpoint=ckpt_path).to(device=device)
+        # self.sam_predictor = SamPredictor(sam)
 
         # self.mesh_renderer = MeshRenderer(
         #     near=0.01,
@@ -678,19 +678,19 @@ class GRMRunner:
         #     ssaa=1,
         #     texture_filter='linear-mipmap-linear').to(device)
 
-    def proc_zero123plus(self, seed, in_img, pipe, seg_padding):
-        init_images = []
-        set_random_seed(seed, deterministic=True)
-        mv_result = np.array(
-            pipe(in_img, num_inference_steps=30, guidance_scale=4.0).images[0])
-        mv_result = mv_result.reshape(3, 320, 2, 320, 3).transpose(0, 2, 1, 3, 4).reshape(6, 320, 320, 3)
-        for img in mv_result:
-            init_images.append(Image.fromarray(img))
-        init_images = do_segmentation_pil(
-            init_images, self.segmentation, padding=seg_padding, bg_color=[0.5, 0.5, 0.5])
-        init_images = [image.astype(np.float32) / 255 for image in init_images]
-        init_images = [image[..., :3] * image[..., 3:] + (1 - image[..., 3:]) for image in init_images]
-        return init_images
+    # def proc_zero123plus(self, seed, in_img, pipe, seg_padding):
+    #     init_images = []
+    #     set_random_seed(seed, deterministic=True)
+    #     mv_result = np.array(
+    #         pipe(in_img, num_inference_steps=30, guidance_scale=4.0).images[0])
+    #     mv_result = mv_result.reshape(3, 320, 2, 320, 3).transpose(0, 2, 1, 3, 4).reshape(6, 320, 320, 3)
+    #     for img in mv_result:
+    #         init_images.append(Image.fromarray(img))
+    #     init_images = do_segmentation_pil(
+    #         init_images, self.segmentation, padding=seg_padding, bg_color=[0.5, 0.5, 0.5])
+    #     init_images = [image.astype(np.float32) / 255 for image in init_images]
+    #     init_images = [image[..., :3] * image[..., 3:] + (1 - image[..., 3:]) for image in init_images]
+    #     return init_images
 
     # def run_text_to_img(self, seed, w,h, prompt, negative_prompt, steps, cfg_scale):
     #     torch.set_grad_enabled(False)
@@ -711,92 +711,92 @@ class GRMRunner:
 
     #     return out_img
 
-    def run_segmentation(self, in_img, empty_cache=True):
-        torch.set_grad_enabled(False)
-        if empty_cache:
-            torch.cuda.empty_cache()
-        in_img_np = np.asarray(in_img)
-        if in_img_np.shape[-1] == 4 and np.any(in_img_np[..., 3] != 255):
-            in_img = in_img_np
-        else:
-            in_img = do_segmentation(
-                in_img_np[None, :, :, :3], self.segmentation, sam_predictor=self.sam_predictor, to_np=True)[0]
-
-        torch.cuda.empty_cache()
-
-        return Image.fromarray(in_img)
-
-    def run_img_to_3d(self, seed, image, model='Zero123++ v1.2', fuse_mesh=False, cache_dir="/output"):
-        torch.set_grad_enabled(False)
-        print(f'\nRunning image-to-3d with seed {seed}...')
-        output_dir = os.path.join(cache_dir, f'output_{uuid.uuid4()}')
-        # if model == 'SV3D':
-        #     img_name = f'input_{uuid.uuid4()}.png'
-        #     image_path = os.path.join(cache_dir, img_name)
-        #     image.save(image_path)
-        #     svd3d_gs(
-        #         grm_model=self.grm_uniform_model,
-        #         grm_model_cfg=self.grm_uniform_config,
-        #         image_path=image_path,
-        #         num_steps=30,
-        #         cache_dir=output_dir,
-        #     )
-        #     out_video = os.path.join(output_dir, img_name[:-4] + '.mp4')
-        if model == 'Zero123++ v1.1':
-            pass
-            # in_img = pad_rgba_image(np.asarray(image), ratio=self.zero123plus_pad_ratio)
-            # print(f'\nRunning Zero123++ generation with seed {seed}...')
-            # init_images = self.proc_zero123plus(
-            #     seed, in_img, self.zero123plus, seg_padding=32)
-            # zero123plus_v11(
-            #     init_images,
-            #     grm_model=self.grm_zero123plus_model,
-            #     grm_model_cfg=self.grm_zero123plus_config,
-            #     num_steps=30,
-            #     cache_dir=output_dir,
-            #     mesh_renderer=self.mesh_renderer,
-            #     fuse_mesh=fuse_mesh)
-        elif model == 'Zero123++ v1.2':
-            in_img = pad_rgba_image(np.asarray(image), ratio=self.zero123plus1_2_pad_ratio)
-            init_images = self.proc_zero123plus(
-                seed, in_img, self.zero123plus1_2, seg_padding=64)
-            zero123plus_v12(
-                init_images,
-                grm_model=self.grm_random_model,
-                grm_model_cfg=self.grm_random_config,
-                num_steps=30,
-                cache_dir=output_dir,
-                mesh_renderer=None,
-                fuse_mesh=fuse_mesh, radius=1.75)
-        else:
-            raise ValueError(f'Unknown model: {model}')
-        # out_video = os.path.join(output_dir, 'gs.mp4')
-        out_gs = os.path.join(output_dir, 'gs.ply')
-        # out_gs_vis = os.path.join(output_dir, 'gs_vis.ply')
-        # out_mesh = os.path.join(output_dir, 'mesh.glb') if fuse_mesh else None
-
-        torch.cuda.empty_cache()
-
-        return out_gs
-
-    # def run_instant3d(self, seed, prompt, fuse_mesh=False, cache_dir="/data"):
+    # def run_segmentation(self, in_img, empty_cache=True):
     #     torch.set_grad_enabled(False)
-    #     print(f'\nRunning Instant3D with seed {seed}...')
-    #     set_random_seed(seed, deterministic=True)
+    #     if empty_cache:
+    #         torch.cuda.empty_cache()
+    #     in_img_np = np.asarray(in_img)
+    #     if in_img_np.shape[-1] == 4 and np.any(in_img_np[..., 3] != 255):
+    #         in_img = in_img_np
+    #     else:
+    #         in_img = do_segmentation(
+    #             in_img_np[None, :, :, :3], self.segmentation, sam_predictor=self.sam_predictor, to_np=True)[0]
+
+    #     torch.cuda.empty_cache()
+
+    #     return Image.fromarray(in_img)
+
+    # def run_img_to_3d(self, seed, image, model='Zero123++ v1.2', fuse_mesh=False, cache_dir="/output"):
+    #     torch.set_grad_enabled(False)
+    #     print(f'\nRunning image-to-3d with seed {seed}...')
     #     output_dir = os.path.join(cache_dir, f'output_{uuid.uuid4()}')
-    #     instant3d_gs(
-    #         self.instant3d_model,
-    #         grm_model=self.grm_uniform_model,
-    #         grm_model_cfg=self.grm_uniform_config,
-    #         prompt=prompt,
-    #         guidance_scale=7.5,
-    #         num_steps=30,
-    #         gaussian_std=0.1,
-    #         mesh_renderer=None,
-    #         fuse_mesh=fuse_mesh,
-    #         cache_dir=output_dir)
+    #     # if model == 'SV3D':
+    #     #     img_name = f'input_{uuid.uuid4()}.png'
+    #     #     image_path = os.path.join(cache_dir, img_name)
+    #     #     image.save(image_path)
+    #     #     svd3d_gs(
+    #     #         grm_model=self.grm_uniform_model,
+    #     #         grm_model_cfg=self.grm_uniform_config,
+    #     #         image_path=image_path,
+    #     #         num_steps=30,
+    #     #         cache_dir=output_dir,
+    #     #     )
+    #     #     out_video = os.path.join(output_dir, img_name[:-4] + '.mp4')
+    #     if model == 'Zero123++ v1.1':
+    #         pass
+    #         # in_img = pad_rgba_image(np.asarray(image), ratio=self.zero123plus_pad_ratio)
+    #         # print(f'\nRunning Zero123++ generation with seed {seed}...')
+    #         # init_images = self.proc_zero123plus(
+    #         #     seed, in_img, self.zero123plus, seg_padding=32)
+    #         # zero123plus_v11(
+    #         #     init_images,
+    #         #     grm_model=self.grm_zero123plus_model,
+    #         #     grm_model_cfg=self.grm_zero123plus_config,
+    #         #     num_steps=30,
+    #         #     cache_dir=output_dir,
+    #         #     mesh_renderer=self.mesh_renderer,
+    #         #     fuse_mesh=fuse_mesh)
+    #     elif model == 'Zero123++ v1.2':
+    #         in_img = pad_rgba_image(np.asarray(image), ratio=self.zero123plus1_2_pad_ratio)
+    #         init_images = self.proc_zero123plus(
+    #             seed, in_img, self.zero123plus1_2, seg_padding=64)
+    #         zero123plus_v12(
+    #             init_images,
+    #             grm_model=self.grm_random_model,
+    #             grm_model_cfg=self.grm_random_config,
+    #             num_steps=30,
+    #             cache_dir=output_dir,
+    #             mesh_renderer=None,
+    #             fuse_mesh=fuse_mesh, radius=1.75)
+    #     else:
+    #         raise ValueError(f'Unknown model: {model}')
+    #     # out_video = os.path.join(output_dir, 'gs.mp4')
     #     out_gs = os.path.join(output_dir, 'gs.ply')
+    #     # out_gs_vis = os.path.join(output_dir, 'gs_vis.ply')
+    #     # out_mesh = os.path.join(output_dir, 'mesh.glb') if fuse_mesh else None
 
     #     torch.cuda.empty_cache()
 
     #     return out_gs
+
+    def run_instant3d(self, seed, prompt, fuse_mesh=False, cache_dir="/data"):
+        torch.set_grad_enabled(False)
+        print(f'\nRunning Instant3D with seed {seed}...')
+        set_random_seed(seed, deterministic=True)
+        output_dir = os.path.join(cache_dir, f'output_{uuid.uuid4()}')
+        instant3d_gs(
+            self.instant3d_model,
+            grm_model=self.grm_uniform_model,
+            grm_model_cfg=self.grm_uniform_config,
+            prompt=prompt,
+            guidance_scale=7.5,
+            num_steps=30,
+            gaussian_std=0.1,
+            mesh_renderer=None,
+            fuse_mesh=fuse_mesh,
+            cache_dir=output_dir)
+        out_gs = os.path.join(output_dir, 'gs.ply')
+
+        torch.cuda.empty_cache()
+
+        return out_gs

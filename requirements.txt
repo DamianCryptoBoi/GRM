@@ -44,5 +44,5 @@ git+https://github.com/NVlabs/nvdiffrast.git@c5caf7bdb8a2448acc491a9faa47753972e
 fpsample
 streamlit
 Ninja
-replicate
+replicate==0.34.2 
 open-clip-torch==2.20.0

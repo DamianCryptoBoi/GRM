@@ -648,9 +648,9 @@ class GRMRunner:
         #     "sudo-ai/zero123plus-v1.1",
         #     torch_dtype=torch.bfloat16,
         # )
-        self.zero123plus.scheduler = EulerAncestralDiscreteScheduler.from_config(
-            self.zero123plus.scheduler.config, timestep_spacing='trailing'
-        )
+        # self.zero123plus.scheduler = EulerAncestralDiscreteScheduler.from_config(
+        #     self.zero123plus.scheduler.config, timestep_spacing='trailing'
+        # )
         self.zero123plus.to(device)
 
         self.zero123plus1_2 = Zero123PlusPipeline.from_pretrained(

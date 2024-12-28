@@ -711,20 +711,20 @@ class GRMRunner:
 
     #     return out_img
 
-    # def run_segmentation(self, in_img, empty_cache=True):
-    #     torch.set_grad_enabled(False)
-    #     if empty_cache:
-    #         torch.cuda.empty_cache()
-    #     in_img_np = np.asarray(in_img)
-    #     if in_img_np.shape[-1] == 4 and np.any(in_img_np[..., 3] != 255):
-    #         in_img = in_img_np
-    #     else:
-    #         in_img = do_segmentation(
-    #             in_img_np[None, :, :, :3], self.segmentation, sam_predictor=self.sam_predictor, to_np=True)[0]
+    def run_segmentation(self, in_img, empty_cache=True):
+        torch.set_grad_enabled(False)
+        if empty_cache:
+            torch.cuda.empty_cache()
+        in_img_np = np.asarray(in_img)
+        if in_img_np.shape[-1] == 4 and np.any(in_img_np[..., 3] != 255):
+            in_img = in_img_np
+        else:
+            in_img = do_segmentation(
+                in_img_np[None, :, :, :3], self.segmentation, sam_predictor=self.sam_predictor, to_np=True)[0]
 
-    #     torch.cuda.empty_cache()
+        torch.cuda.empty_cache()
 
-    #     return Image.fromarray(in_img)
+        return Image.fromarray(in_img)
 
     def run_img_to_3d(self, seed, image, model='Zero123++ v1.2', fuse_mesh=False, cache_dir="/output"):
         torch.set_grad_enabled(False)
